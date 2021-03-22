@@ -4,7 +4,8 @@
         "VR Device User Alert"
     ],
     "m_SettingValues": [
-        "False",
-        "False"
+        "True",
+        "True",
+        "Standalone"
     ]
 }
