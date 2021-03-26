@@ -8,14 +8,14 @@ public class ConfigJointAxis : InputComponent
     public bool invert = false;
     
     [System.Serializable]
-    public enum Axis { X, Z}
+    public enum Axis { directionX, directionZ}
     public Axis axis;
     
     //Returns the angle in a range between -1 and 1
     public override float GetNormalizedAxis()
     {
         float normalized = 0;
-        if (axis == Axis.X)
+        if (axis == Axis.directionX)
             normalized = Mathf.InverseLerp(this.joint.lowAngularXLimit.limit, this.joint.highAngularXLimit.limit, GetJointAngle());
         else
             normalized = Mathf.InverseLerp(-this.joint.angularZLimit.limit, this.joint.angularZLimit.limit, GetJointAngle());
@@ -31,13 +31,13 @@ public class ConfigJointAxis : InputComponent
     public float GetJointAngle()
     {
         float deltaMove;
-        if(this.axis == Axis.X)
+        if(this.axis == Axis.directionX)
         {
-            deltaMove = this.joint.connectedBody.transform.localPosition.x;
+            deltaMove = this.joint.connectedBody.transform.localPosition.z;
         }
         else
         {
-            deltaMove = this.joint.connectedBody.transform.localPosition.z;
+            deltaMove = this.joint.connectedBody.transform.localPosition.x;
         }
 
         float angle = Mathf.Atan2(this.joint.connectedBody.transform.localPosition.y, deltaMove) * Mathf.Rad2Deg;
