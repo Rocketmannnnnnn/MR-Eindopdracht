@@ -6,68 +6,77 @@ public class PlanetGeneration : MonoBehaviour
 {
 
     // need to be generated
-    public GameObject[] objects;
+    public GameObject[] asteriods;
+    public GameObject[] planets;
+    public GameObject comet;
 
-    public float size;
+    // x, y, z perlin noise generation
+    public float grid;
     public float value;
-    public float noiseFactor;
-    public float objectFactor;
-    public float indexFactor;
+    public float noise;
+
+    // distance and scale
+    public float positionFactor;
     public float scaleFactor;
+
+    // percentages
+    public int asteroidPercentage;
+    public int planetPercentage;
+
+    // private
+    private System.Random random;
 
     // Start is called before the first frame update
     void Start()
     {
 
-        this.Shuffle(new System.Random(), this.objects);
+        this.random = new System.Random();
 
-        for (float x = 0; x < this.size; x++)
-            for (float y = 0; y < this.size; y++)
-                for (float z = 0; z < this.size; z++)
-                {
+        this.Shuffle(this.random, this.asteriods);
+        this.Shuffle(this.random, this.planets);
 
-                    float perlin = this.perlin3D(x * this.noiseFactor, y * this.noiseFactor, z * this.noiseFactor);
-
-                    if (perlin >= this.value)
-                        this.createObject(x, y, z, perlin);
-                }
+        for (float x = 0; x < this.grid; x++)
+            for (float y = 0; y < this.grid; y++)
+                for (float z = 0; z < this.grid; z++)
+                    if (this.perlin3D(x * this.noise, y * this.noise, z * this.noise) >= this.value)
+                        this.createObject(x, y, z);
     }
 
-    private void createObject(float x, float y, float z, float perlin)
+    private void createObject(float x, float y, float z)
     {
 
-        Vector3 position = new Vector3(x - (this.size / 2), y - (this.size / 2), z - (this.size / 2));
-        position *= (2 * this.objectFactor);
+        Debug.Log("Object placed");
 
-        float objectIndex = ((perlin - this.value) * this.indexFactor) % 1;
-        objectIndex *= this.objects.Length;
+        // calculate the position of the object
+        Vector3 position = new Vector3(x - (this.grid / 2), y - (this.grid / 2), z - (this.grid / 2));
+                position *= (2 * this.positionFactor);
 
-        float objectScale = ((perlin - this.value) * this.indexFactor) % 2;
-        objectScale = Mathf.Pow(objectScale, this.scaleFactor) + 0.5f;
+        // creates a scale for the object
+        float objectScale = Mathf.Pow(this.random.Next(100) / 50.0f, this.scaleFactor) + 0.5f;
 
-        if(Physics.CheckSphere(position, objectScale * 50))
-        {
+        // if the object is to close to another, it won't be placed.
+        if (Physics.CheckSphere(position, objectScale * 50))
             return;
-        }
 
-        GameObject obj = Instantiate(this.objects[Mathf.RoundToInt(objectIndex) % this.objects.Length], position, new Quaternion());
-        obj.transform.localScale *= objectScale;
+        // places the object with a picked GameObject
+        GameObject placed = Instantiate(this.pickObject(), position, new Quaternion());
         
-        Debug.Log("Object created! || XYZ: " + x + ", " + y + ", " + z + " || index: " + objectIndex + " || scale: " + objectScale);
-    } 
+        // adds scale to the object
+        placed.transform.localScale *= objectScale;
 
-    private void Shuffle(System.Random rng, GameObject[] array)
+       
+    }
+
+    private GameObject pickObject()
     {
 
-        int n = array.Length;
-        while (n > 1)
-        {
+        if (this.asteroidPercentage >= random.Next(100))
+            return this.asteriods[this.random.Next(this.asteriods.Length)];
+        
+        if (this.planetPercentage >= random.Next(100))
+            return this.planets[this.random.Next(this.planets.Length)];
 
-            int k = rng.Next(n--);
-            GameObject temp = array[n];
-            array[n] = array[k];
-            array[k] = temp;
-        }
+        return this.comet;
     }
 
     private float perlin3D(float x, float y, float z)
@@ -87,5 +96,19 @@ public class PlanetGeneration : MonoBehaviour
         float xyz = (xy + yz + xz + yx + zy + zx);
 
         return xyz / 6;
+    }
+
+    private void Shuffle(System.Random rng, GameObject[] array)
+    {
+
+        int n = array.Length;
+        while (n > 1)
+        {
+
+            int k = rng.Next(n--);
+            GameObject temp = array[n];
+            array[n] = array[k];
+            array[k] = temp;
+        }
     }
 }
