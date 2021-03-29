@@ -45,7 +45,12 @@ public class PlanetGeneration : MonoBehaviour
         float objectScale = ((perlin - this.value) * this.indexFactor) % 2;
         objectScale = Mathf.Pow(objectScale, this.scaleFactor) + 0.5f;
 
-        GameObject obj = Instantiate(this.objects[Mathf.RoundToInt(objectIndex)], position, new Quaternion());
+        if(Physics.CheckSphere(position, objectScale * 50))
+        {
+            return;
+        }
+
+        GameObject obj = Instantiate(this.objects[Mathf.RoundToInt(objectIndex) % this.objects.Length], position, new Quaternion());
         obj.transform.localScale *= objectScale;
         
         Debug.Log("Object created! || XYZ: " + x + ", " + y + ", " + z + " || index: " + objectIndex + " || scale: " + objectScale);
