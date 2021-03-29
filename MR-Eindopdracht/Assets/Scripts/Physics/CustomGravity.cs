@@ -27,9 +27,10 @@ public class CustomGravity : MonoBehaviour
 
     private void FixedUpdate()
     {
-        foreach(Rigidbody body in this.bodies)
+        for (int i = 0; i < this.bodies.Count; i++)
         {
-            body.AddForce(body.mass * gravityConstant);
+            if(this.bodies[i] != null)
+                this.bodies[i].AddForce(this.bodies[i].mass * this.gravityConstant);
         }
     }
 }

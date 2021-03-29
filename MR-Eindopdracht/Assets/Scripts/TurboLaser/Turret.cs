@@ -8,19 +8,17 @@ public class Turret : MonoBehaviour
     [SerializeField]
     private Transform raycastStart;
     [SerializeField]
-    private GameObject xAxis;
-    [SerializeField]
-    private GameObject yAxis;
+    private GameObject turretModel;
     [SerializeField]
     private TurretControl control;
     [SerializeField]
     private List<Transform> firePositions = new List<Transform>();
     [SerializeField]
-    private Vector3 rotationOffset;
-    [SerializeField]
     private GameObject laserPrefab;
     [SerializeField]
     private float firedelay = 0.5f;
+    [SerializeField]
+    private float rotationSpeed = 10;
 
     void Start()
     {
@@ -37,19 +35,9 @@ public class Turret : MonoBehaviour
 
     private void RotateToTarget()
     {
-        Vector3 turretLookDirection = this.control.Target.transform.position - this.raycastStart.position;
-
+        Vector3 turretLookDirection = (this.control.Target.transform.position - this.raycastStart.position).normalized;
         Quaternion rotation = Quaternion.LookRotation(turretLookDirection);
-
-        //Vector3 rotation = Vector3.RotateTowards(this.raycastStart.position, this.control.Target.transform.position, this.rotationSpeed * Time.fixedDeltaTime, 0.0f);
-        this.xAxis.transform.localRotation = Quaternion.Euler(
-            new Vector3(rotation.eulerAngles.x + rotationOffset.x, 
-                        this.xAxis.transform.localRotation.y, 
-                        this.xAxis.transform.localRotation.z));
-        this.yAxis.transform.localRotation = Quaternion.Euler(
-            new Vector3(this.xAxis.transform.localRotation.x,
-                        rotation.eulerAngles.y + rotationOffset.y,
-                        this.xAxis.transform.localRotation.z));
+        turretModel.transform.rotation = Quaternion.Slerp(turretModel.transform.rotation, rotation, Time.fixedDeltaTime * rotationSpeed);
     }
 
     IEnumerator Fire()
@@ -58,10 +46,9 @@ public class Turret : MonoBehaviour
         {
             if (this.control.CanFire && this.control.Target)
             {
-                Vector3 turretLookDirection = this.control.Target.transform.position - this.raycastStart.position;
+                Ray ray = new Ray(this.raycastStart.position, this.raycastStart.forward);
                 RaycastHit hit;
-
-                if (Physics.Raycast(this.raycastStart.position, turretLookDirection, out hit))
+                if (Physics.Raycast(ray, out hit, float.MaxValue))
                 {
                     if (hit.transform.root.gameObject == this.control.Target.transform.gameObject)
                     {
