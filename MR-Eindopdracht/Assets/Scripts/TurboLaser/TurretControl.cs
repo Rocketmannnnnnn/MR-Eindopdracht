@@ -35,6 +35,11 @@ public class TurretControl : MonoBehaviour
         }
     }
 
+    public void ToggleCanFire()
+    {
+        CanFire = !CanFire;
+    }
+
     IEnumerator FindClosestTarget()
     {
         while (true)
