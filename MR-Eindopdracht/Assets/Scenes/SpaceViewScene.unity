@@ -791,9 +791,11 @@ MonoBehaviour:
   - {fileID: 7676144744171628050, guid: dfbb386e493b07346b712f86fee446a9, type: 3}
   - {fileID: 7676144744171628050, guid: dfbb386e493b07346b712f86fee446a9, type: 3}
   size: 20
-  value: 0.625
-  noiseFactor: 0.95
-  objectFactor: 200
+  value: 0.64
+  noiseFactor: 0.975
+  objectFactor: 500
+  indexFactor: 100
+  scaleFactor: 5.5
 --- !u!4 &2137593543
 Transform:
   m_ObjectHideFlags: 0

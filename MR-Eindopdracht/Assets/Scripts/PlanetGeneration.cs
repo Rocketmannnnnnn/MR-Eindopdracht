@@ -12,6 +12,8 @@ public class PlanetGeneration : MonoBehaviour
     public float value;
     public float noiseFactor;
     public float objectFactor;
+    public float indexFactor;
+    public float scaleFactor;
 
     // Start is called before the first frame update
     void Start()
@@ -37,18 +39,16 @@ public class PlanetGeneration : MonoBehaviour
         Vector3 position = new Vector3(x - (this.size / 2), y - (this.size / 2), z - (this.size / 2));
         position *= (2 * this.objectFactor);
 
-        float objectIndex = (this.objects.Length * (perlin - this.value)) / (1 - this.value);
-        objectIndex *= 1000;
-        objectIndex %= this.objects.Length;
+        float objectIndex = ((perlin - this.value) * this.indexFactor) % 1;
+        objectIndex *= this.objects.Length;
 
-        //float objectIndex = (((perlin - this.value) * 25) % 1) * this.objects.Length;
+        float objectScale = ((perlin - this.value) * this.indexFactor) % 2;
+        objectScale = Mathf.Pow(objectScale, this.scaleFactor) + 0.5f;
 
         GameObject obj = Instantiate(this.objects[Mathf.RoundToInt(objectIndex)], position, new Quaternion());
-
-        float objectScale = (perlin - this.value) / (1 - value) + 0.5f;
         obj.transform.localScale *= objectScale;
         
-        Debug.Log("Object created on: " + x + ", " + y + ", " + z + ". With index: " + objectIndex + "And scale: " + objectScale);
+        Debug.Log("Object created! || XYZ: " + x + ", " + y + ", " + z + " || index: " + objectIndex + " || scale: " + objectScale);
     } 
 
     private void Shuffle(System.Random rng, GameObject[] array)
